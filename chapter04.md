@@ -47,9 +47,9 @@ Note: If you decide to change the flow of A first at the down processor and then
 
 ## Segment 31904: Sequence Counter
 
-Neither of these solutions uses the `SWP` instruction.
+None of these solutions use the `SWP` instruction.
 
-### Optimized for speed: 220 cycles, 6 nodes, 22 instructions
+### Optimized for speed and node count: 220 cycles, 6 nodes, 22 instructions
 
 [Save file](../save/31904.0.txt)
 
@@ -58,6 +58,23 @@ Solution by [gmnenad](https://github.com/gmnenad).
 Node 7 behaves like an extra register for node 8, storing the sum of all the inputs so far.
 
 Node 5 checks whether the input is 0 (signaling the end of a sequence) and passes the result to node 9, which counts the length of each sequence.
+
+### Optimized for speed: 204 cycles, 9 nodes, 28 instructions
+
+[Save file](../save/31904.1.txt)
+
+This improves speed further at the cost of node count by separating respectively
+
+ - **control flow** and
+ - **addition and outputting**
+ 
+into two separate nodes (5 and 9) for the summation task (`OUT.S`).
+
+Control flow is handled in a "sum master"  (node 5) which controls an adjacent "sum slave" (node 9). In other words, the only task the sum master performs is to tell the sum slave what to do; the sum slave then either adds a number from the stream, or outputs the current sum and resets. The input stream is split so that the two read it independently; the stream itself is not passed from the master to the slave, which reduces complexity for the sum master.
+
+Counting is implemented in a similar way, but the count slave need not know the value of the stream, only whether to add 1 or send the count, so there is no need to split the stream again. This is fortunate, since the layout of the segment would not permit it.
+
+Solution by [mortenschioler](https://github.com/mortenschioler).
 
 ### Optimized for size: 298 cycles, 4 nodes, 19 instructions
 

@@ -1,0 +1,141 @@
+@0
+#PIPE
+MOV RIGHT,DOWN
+
+
+
+
+
+#          |------
+#          |
+#          |
+#          |
+#          |
+#          |
+#          |
+#          V
+
+@1
+#SPLITTER <->
+
+MOV UP,ACC
+MOV ACC,LEFT
+MOV ACC,RIGHT
+
+#           |
+#<----------^---->
+
+@2
+#COUNT MASTER
+
+START:
+ MOV LEFT,ACC
+ JNZ IS_NOT_TERM
+IS_TERM:
+ #CALL PASS
+ MOV 3,DOWN
+ JMP START
+IS_NOT_TERM:
+ #CALL INCREMENT
+ MOV 1,DOWN
+#          |
+#          |
+#          V
+
+@3
+#SPLITTER
+
+#THIS IS TO AVOID
+#AN EXTRA LINE OF
+#CODE IN SUMMASTER
+#PASSING "ACC" TO
+#SUM SLAVE
+
+MOV UP,ACC
+MOV ACC,ANY
+MOV ACC,ANY
+#          O---->
+#          |
+#          |
+#          V
+
+@4
+#SUM MASTER
+
+START:
+ MOV LEFT,ACC
+ JNZ IS_NOT_TERM
+IS_TERM:
+ MOV 1,DOWN#BREAK
+ JMP START
+IS_NOT_TERM:
+ MOV -1,DOWN#CONT
+
+#    ------O
+#          |
+#          |
+#          V
+
+@5
+#COUNT SLAVE
+
+S: JRO UP
+INCREMENT: ADD 1
+JMP S
+PASS: MOV ACC,DOWN
+MOV 0,ACC
+
+
+
+
+#          |
+#          |
+#          |
+#          V
+
+@6
+
+
+@7
+#PIPE
+MOV UP,RIGHT
+
+
+#          |
+#          |
+#          |
+#          O----->
+
+@8
+#SUM SLAVE
+
+ADD LEFT
+JRO UP#COND BREAK
+MOV ACC,DOWN
+MOV 0,ACC
+#          |
+#----------O
+#          |
+#          |
+#          |
+#          |
+#          V
+
+@9
+#PIPE
+MOV UP,DOWN
+
+
+
+
+
+
+
+
+#          |
+#          |
+#          |
+#          |
+#          V
+
+@10
